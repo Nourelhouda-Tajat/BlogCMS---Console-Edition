@@ -8,8 +8,9 @@ class User {
     protected DateTime $createdAt;
     protected ?DateTime $lastLogin;
 
-    public function __construct($idUser, $username, $email, $password, $role){
-        $this->idUser = $idUser;
+    public function __construct($username, $email, $password, $role){
+        global $users;
+        $this->idUser = cont($users)+1;
         $this->username = $username;
         $this->email = $email;
         $this->password = $password;
@@ -17,7 +18,20 @@ class User {
         $this->createdAt = new DateTime('today');
         $this->lastLogin = Null;
     }
-
+    public function checklogin($username, $password){
+            if ($username===$this->username && $password===$this->password) {
+                return true;
+            }
+    }
+    public function getUsername() {
+        return $this->username;
+    }
+    public function getEmail() {
+        return $this->email;
+    }
+    public function getRole() {
+        return $this->role;
+    } 
     public function ReadArticle(){
 
     }
@@ -28,52 +42,59 @@ class User {
 
     }
     
-    public login($email, $password){
-
-    }
+    
     
 
 }
 
 class Author extends User{
     private string $bio;
+    private array $articles = [];
 
-    public function __construct($idUser, $username, $email, $password, $role, $bio){
+    public function __construct($idUser, $username, $email, $password, $bio, $articles=[]){
         parent::__construct($idUser, $username, $email, $password, 'Author');
         $this->bio = $bio;
+        $this->articles=$articles;
+    }
+    public function creatOwnArticle(Article $article){
+        $this->articles[] = $article;
+    }
+    public function findArticle($id){
+        foreach ($articles as $article) {
+            if ($article->getIdArticle()===$id) {
+                return $article;
+            }   
+        }
+    }
+    public function updateOwnArticle(){
+
 
     }
-    public creatOwnArticle(){
-
-    }
-    public updateOwnArticle(){
-
-    }
-    public deleteOwnArticle(){
+    public function deleteOwnArticle(){
 
     }
     
 }
 class Moderateur extends User {
-    public ceartAssignArticle(){
+    public function ceartAssignArticle(){
 
     }
-    public updateArticle(){
+    public function updateArticle(){
 
     }
-    public publishArticle($idArticle){
+    public function publishArticle($idArticle){
 
     }
-    public deleteArticle(){
+    public function deleteArticle(){
 
     }
-    public creatCategory($nameCategory, $parent){
+    public function creatCategory($nameCategory, $parent){
 
     }
-    public approvedComment($idComment){
+    public function approvedComment($idComment){
 
     }
-    public deleteComment($idComment){
+    public function deleteComment($idComment){
 
     }
 }
@@ -83,12 +104,14 @@ class Moderateur extends User {
 class Editor extends Moderateur {
     private string $moderationLevel;//'junior', 'senior', 'chief'
 
-    public function __construct(){
-        
+    public function __construct($idUser, $username, $email, $password, $moderationLevel){
+        parent::__construct($idUser, $username, $email, $password, 'Editor');
+        $this->moderationLevel = $moderationLevel;
+
     }
 }
 class Admin extends Moderateur {
-    private bool $isSuperAdmin
+    private bool $isSuperAdmin;
     public function __construct(){
         
     }
@@ -106,13 +129,25 @@ class Article {
     private int $idArticle;
     private string $title;
     private string $content;
+    private string $category;
     private string $status; // 'draft', 'published', 'archived'
     private array $comments;
     private DateTime $updatedAt;
     private DateTime $publishedAt; 
 
-    public function __construct(){
-
+    public function __construct($title, $content, $category){
+        $this->idArticle=$idArticle+1;
+        $this->title=$title;
+        $this->content=$content;
+        $this->category=$category;
+        $this->status='draft';
+        $this->comments=[];
+        $this->updatedAt=Null;
+        $this->publishedAt= new DateTime('today');
+    }
+    
+    public function getIdArticle(){
+        return $this->idArticle;
     }
     public function addCategory(){
 
@@ -132,9 +167,11 @@ class Category{
     private int $idCategory;
     private string $name;
     private string $description;
-    private ?int $parent;
 
-    public function __construct(){
+    public function __construct($idCategory, $name, $description){
+        $this->idCategory=$idCategory;
+        $this->name=$name;
+        $this->description=$description;
 
     }
     public function addSubCategory(){
@@ -142,5 +179,8 @@ class Category{
     }
 }
 
+
+
+    
 
 ?>
